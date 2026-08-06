@@ -51,13 +51,6 @@ CUDA_VISIBLE_DEVICES=0 ./llama.cpp/build/bin/llama-server \
   --port 8080 -ngl 99 --alias llama-3.2-1b &
 ```
 
-## Biến môi trường
-
-`scripts/eval/shared/llm.py` gọi DeepSeek API để làm judge. Cần đặt:
-
-```bash
-export DEEPSEEK_API_KEY="your_api_key"
-```
 
 ## Chạy pipeline đánh giá
 
