@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ViTransInject: Evaluating Translation-Mediated Indirect Prompt Injection in Vietnamese LLM Agents." />
+    <title>ViTransInject · Translation-Mediated Indirect Prompt Injection in Vietnamese LLM Agents</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      /* Technical variant · docs-style sidebar, mono labels, hairline grid, warm grey ground · one amber accent */
+      :root{
+        --bg:#f6f6f3;--panel:#ffffff;--ink:#1c1c1a;--ink-2:#45453f;--ink-3:#77776f;--line:#d9d9d2;--line-2:#c6c6bd;
+        --accent:#a8570f;--accent-soft:#f7ecdd;--ok:#2f6b4f;--bad:#a83a2a;
+        --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;--sans:"Source Sans 3",ui-sans-serif,-apple-system,"Segoe UI",sans-serif;
+        --side:15rem;
+      }
+      *{box-sizing:border-box}
+      html{overflow-x:clip;scroll-behavior:smooth}
+      body{margin:0;overflow-x:clip;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:1.02rem;line-height:1.6;-webkit-font-smoothing:antialiased}
+      a{color:inherit}
+      img{display:block;max-width:100%;height:auto}
+      h1,h2,h3{margin:0;font-weight:600;line-height:1.2;letter-spacing:0}
+      p{margin:0 0 1em}
+      code,kbd,pre{font-family:var(--mono)}
+      p code,li code,td code,dd code{font-size:.82em;background:#eeeee9;border:1px solid var(--line);padding:0 4px;border-radius:3px}
+      :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+      .mono{font-family:var(--mono)}
+      .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+
+      /* frame */
+      .frame{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
+      .side{position:sticky;top:0;height:100vh;overflow:auto;padding:26px 22px;border-right:1px solid var(--line);background:var(--panel);font-family:var(--mono);font-size:.78rem}
+      .side .brand{display:block;font-weight:600;font-size:.86rem;margin-bottom:4px;text-decoration:none}
+      .side .sub{color:var(--ink-3);font-size:.7rem;margin-bottom:26px;line-height:1.5}
+      .side ol{list-style:none;margin:0;padding:0}
+      .side li a{display:flex;gap:10px;padding:7px 0;color:var(--ink-2);text-decoration:none;border-bottom:1px dashed var(--line)}
+      .side li a b{color:var(--ink-3);font-weight:400;min-width:1.6em}
+      .side li a:hover{color:var(--ink)}
+      .side li a.active{color:var(--accent)}
+      .side li a.active b{color:var(--accent)}
+      .side .ext{margin-top:26px;display:grid;gap:8px}
+      .side .ext a{display:block;padding:9px 11px;border:1px solid var(--line-2);background:var(--bg);text-decoration:none;color:var(--ink);font-size:.74rem}
+      .side .ext a:hover{border-color:var(--ink-3)}
+      .side .ext a.primary{background:var(--ink);border-color:var(--ink);color:#fff}
+      .side .ext a span{color:var(--ink-3);margin-right:6px}
+      .side .ext a.primary span{color:#c9c9c0}
+      .topbar{display:none}
+
+      main{min-width:0;padding:44px 56px 96px;max-width:64rem}
+      .meta{border:1px solid var(--line);background:var(--panel);margin:22px 0 40px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+      .meta div{padding:12px 16px;border-top:1px solid var(--line);min-width:0}
+      .meta div:nth-child(-n+2){border-top:0}
+      .meta div:nth-child(odd){border-right:1px solid var(--line)}
+      .meta dt{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+      .meta dd{margin:0;font-size:.92rem;overflow-wrap:anywhere}
+      .meta dd a{color:var(--accent);text-decoration:none}
+      .meta dd a:hover{text-decoration:underline;text-underline-offset:3px}
+      .kicker{font-family:var(--mono);font-size:.72rem;color:var(--accent);margin-bottom:14px}
+      h1{font-size:clamp(1.55rem,2.8vw,2.2rem);max-width:44rem;overflow-wrap:anywhere;min-width:0;text-wrap:balance}
+      .abstract{font-size:1.02rem;color:var(--ink-2);max-width:44rem;margin-bottom:0}
+      .abstract b{color:var(--ink);font-weight:600}
+
+      section{scroll-margin-top:24px;padding-top:44px;margin-top:44px;border-top:1px solid var(--line)}
+      h2{font-family:var(--mono);font-size:.95rem;font-weight:600;margin-bottom:20px;display:flex;align-items:baseline;gap:12px}
+      h2 b{color:var(--accent);font-weight:400}
+      h3{font-size:1rem;margin:26px 0 8px}
+      .prose{max-width:44rem}
+      .prose p:last-child{margin-bottom:0}
+
+      .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));border:1px solid var(--line);background:var(--panel);margin:20px 0}
+      .kv div{padding:14px 16px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0}
+      .kv b{display:block;font-family:var(--mono);font-size:1.2rem;font-weight:600;font-variant-numeric:tabular-nums;margin-bottom:4px;overflow-wrap:anywhere}
+      .kv span{font-size:.8rem;color:var(--ink-3)}
+      .kv .hl b{color:var(--accent)}
+      .kv .bad b{color:var(--bad)}
+
+      dl.def{margin:14px 0 0;border-top:1px solid var(--line)}
+      dl.def div{display:grid;grid-template-columns:10rem minmax(0,1fr);gap:16px;padding:10px 0;border-bottom:1px solid var(--line)}
+      dl.def dt{font-family:var(--mono);font-size:.78rem;color:var(--ink);padding-top:3px}
+      dl.def dd{margin:0;font-size:.95rem;color:var(--ink-2)}
+      dl.def dd b{color:var(--ink);font-weight:600}
+
+      ul.contrib{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+      ul.contrib li{display:grid;grid-template-columns:2.2rem minmax(0,1fr);gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+      ul.contrib li i{font-family:var(--mono);font-style:normal;font-size:.72rem;color:var(--accent);padding-top:5px}
+      ul.contrib li b{display:block;font-weight:600;margin-bottom:2px}
+      ul.contrib li span{color:var(--ink-2);font-size:.95rem}
+
+      figure{margin:24px 0;padding:14px;border:1px solid var(--line);background:var(--panel)}
+      figcaption{font-size:.82rem;color:var(--ink-2);margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);line-height:1.5}
+      figcaption b{font-family:var(--mono);font-size:.72rem;color:var(--ink);margin-right:6px}
+
+      .tbl{margin:20px 0;border:1px solid var(--line);background:var(--panel);overflow-x:auto}
+      .tbl .cap{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line)}
+      .tbl .cap b{color:var(--ink);font-weight:600}
+      table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}
+      th,td{padding:8px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+      thead th{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:500;background:var(--bg)}
+      thead th:first-child,th[scope=row]{text-align:left}
+      th[scope=row]{font-weight:500}
+      tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+      tr.mean th,tr.mean td{border-top:1px solid var(--line-2);font-weight:600;background:var(--bg)}
+      td.hi{font-weight:700;color:var(--accent)}
+      td.bad{font-weight:700;color:var(--bad)}
+      .tbl .note{padding:9px 14px;border-top:1px solid var(--line);font-size:.78rem;color:var(--ink-3)}
+
+      .eqs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:18px 0}
+      .eq{padding:14px 16px;border:1px solid var(--line);background:var(--panel);min-width:0}
+      .eq code{display:block;font-size:.82rem;margin-bottom:8px;white-space:normal;overflow-wrap:anywhere}
+      .eq p{font-size:.84rem;color:var(--ink-2);margin:0}
+
+      .flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
+      .flow div{padding:14px 16px;border:1px solid var(--line);background:var(--panel);min-width:0}
+      .flow .k{display:block;margin-bottom:8px}
+      .flow>div>code{display:block;font-size:.8rem;margin-bottom:6px;white-space:normal;overflow-wrap:anywhere}
+      .flow p{font-size:.84rem;color:var(--ink-2);margin:0}
+      .flow .allow{color:var(--ok)}
+      .flow .block{color:var(--bad)}
+
+      .callout{padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--accent);background:var(--accent-soft);font-size:.95rem;color:var(--ink-2);margin:20px 0;max-width:44rem}
+      .callout b{color:var(--ink);font-weight:600}
+      pre.block{margin:20px 0;padding:16px 18px;border:1px solid var(--line);background:var(--panel);font-size:.8rem;line-height:1.7;overflow-x:auto;color:var(--ink-2)}
+      pre.block .c{color:var(--ink-3)}
+      .cite{position:relative}
+      .cite button{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:.68rem;padding:5px 9px;border:1px solid var(--line-2);background:var(--bg);cursor:pointer;color:var(--ink)}
+      .cite button:hover{border-color:var(--ink-3)}
+      .links{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0}
+      .links a{display:block;padding:14px 16px;border:1px solid var(--line);background:var(--panel);text-decoration:none}
+      .links a:hover{border-color:var(--ink-3)}
+      .links .k{display:block;margin-bottom:6px}
+      .links b{display:block;font-weight:600;margin-bottom:2px}
+      .links span.u{font-family:var(--mono);font-size:.74rem;color:var(--ink-2);overflow-wrap:anywhere}
+      footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);font-family:var(--mono);font-size:.7rem;color:var(--ink-3);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+      @media(max-width:960px){
+        .frame{grid-template-columns:1fr}
+        .side{display:none}
+        .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10;padding:0 20px;min-height:52px;border-bottom:1px solid var(--line);background:var(--panel);font-family:var(--mono);font-size:.78rem}
+        .topbar nav{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none}
+        .topbar nav a{white-space:nowrap;text-decoration:none;color:var(--ink-2)}
+        .topbar nav::-webkit-scrollbar{display:none}
+        main{padding:32px 20px 72px}
+        .eqs,.flow{grid-template-columns:1fr}
+        section{scroll-margin-top:60px}
+      }
+      @media(max-width:600px){
+        .meta{grid-template-columns:1fr}
+        .meta div:nth-child(odd){border-right:0}
+        .meta div:nth-child(2){border-top:1px solid var(--line)}
+        dl.def div{grid-template-columns:1fr;gap:2px}
+        .links{grid-template-columns:1fr}
+        figure{padding:8px}
+        h2{font-size:.86rem}
+      }
+      @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    </style>
+  </head>
+  <body>
+    <div class="topbar"><strong>ViTransInject</strong><nav><a href="#overview">overview</a><a href="#benchmark">benchmark</a><a href="#method">method</a><a href="#results">results</a><a href="#defense">defense</a><a href="#resources">resources</a><a href="#citation">cite</a></nav></div>
+    <div class="frame">
+      <aside class="side" aria-label="Sections">
+        <a class="brand" href="#top">ViTransInject</a>
+        <p class="sub">Translation-mediated indirect prompt injection · Vietnamese LLM agents</p>
+        <ol>
+          <li><a href="#overview"><b>01</b>overview</a></li>
+          <li><a href="#benchmark"><b>02</b>benchmark</a></li>
+          <li><a href="#method"><b>03</b>method</a></li>
+          <li><a href="#results"><b>04</b>results</a></li>
+          <li><a href="#defense"><b>05</b>defense</a></li>
+          <li><a href="#resources"><b>06</b>resources</a></li>
+          <li><a href="#citation"><b>07</b>citation</a></li>
+        </ol>
+        <div class="ext">
+          <a class="primary" href="../paper/ViTransInject.pdf"><span>pdf</span>Paper</a>
+          <a href="https://github.com/trantrongnb/ViTransInject" rel="noopener"><span>git</span>Source code</a>
+          <a href="https://huggingface.co/datasets/trongnb/ViTransInject" rel="noopener"><span>hf</span>Benchmark data</a>
+        </div>
+      </aside>
+
+      <main id="top">
+        <p class="kicker">preprint · 2026 · faculty of artificial intelligence, ptit</p>
+        <h1>ViTransInject: Evaluating Translation-Mediated Indirect Prompt Injection in Vietnamese LLM Agents</h1>
+        <dl class="meta">
+          <div><dt>Authors</dt><dd>Trong Tran · Thanh Tran · Cuong Pham Duc (corresponding)</dd></div>
+          <div><dt>Affiliation</dt><dd>Faculty of Artificial Intelligence, Posts and Telecommunications Institute of Technology (PTIT), Hanoi, Vietnam</dd></div>
+          <div><dt>Code</dt><dd><a href="https://github.com/trantrongnb/ViTransInject" rel="noopener">github.com/trantrongnb/ViTransInject</a></dd></div>
+          <div><dt>Dataset</dt><dd><a href="https://huggingface.co/datasets/trongnb/ViTransInject" rel="noopener">huggingface.co/datasets/trongnb/ViTransInject</a></dd></div>
+          <div><dt>Contact</dt><dd><a href="mailto:cuongpd@ptit.edu.vn">cuongpd@ptit.edu.vn</a></dd></div>
+          <div><dt>Keywords</dt><dd>Indirect prompt injection · LLM agents · Vietnamese NLP · Multilingual safety · Machine translation</dd></div>
+        </dl>
+        <p class="abstract"><b>Abstract.</b> Vietnamese LLM agents may normalize or translate untrusted content before processing, yet it remains unclear how such transformations affect susceptibility to indirect prompt injection. We present ViTransInject-Bench, a Vietnamese benchmark covering multiple agent tasks, linguistic representations, attack strategies, and translation-mediated deployment pipelines. We introduce the Translation Amplification Factor to quantify paired changes in attack success across linguistic representations, and evaluate a Cross-View Consistency Guard that compares agent behavior across original Vietnamese, diacritic-free Vietnamese, and English-translated views. Across five open-weight models, bilingual deployment reaches a mean ASR of 9.7%, compared with 7.1% under direct Vietnamese processing. Machine-translated and bilingual configurations obtain pooled TAF values of 1.30 and 1.27, although the direction and magnitude of these effects vary across models. The guard reduces mean ASR from 7.7% to 3.6% while producing fewer false positives on clean look-alike cases than keyword filtering, at the cost of additional agent inference.</p>
+
+        <section id="overview">
+          <h2><b>01</b>overview</h2>
+          <div class="prose">
+            <p>LLM agents read emails, retrieved documents, customer records, and search results, and may act on them through tools. Untrusted content can carry instructions that redirect the agent from the user's task: task hijacking, unintended tool use, or information disclosure. Existing IPI benchmarks evaluate English settings almost exclusively.</p>
+            <p>In multilingual pipelines, content is often transformed before it reaches the agent. Vietnamese inputs may appear without diacritics, mixed with English, or machine-translated. ViTransInject studies the case where the injection is already embedded in a Vietnamese document and the language transformation is introduced by the deployment pipeline, not by the attacker.</p>
+          </div>
+          <div class="kv">
+            <div><b>3,100</b><span>benchmark records</span></div>
+            <div><b>350</b><span>seeds (250 task + 100 look-alike)</span></div>
+            <div><b>5</b><span>agent models, 1–3B params</span></div>
+            <div><b>6</b><span>linguistic representations</span></div>
+            <div class="hl"><b>1.30</b><span>pooled TAF, mt_en</span></div>
+            <div class="hl"><b>0.036</b><span>mean ASR with guard (from 0.077)</span></div>
+          </div>
+          <h3>Contributions</h3>
+          <ul class="contrib">
+            <li><i>C1</i><div><b>ViTransInject-Bench</b><span>Five agent tasks, six linguistic representations, five injection styles, three attacker goals, plus clean and clean look-alike cases.</span></div></li>
+            <li><i>C2</i><div><b>Translation Amplification Factor</b><span>A paired protocol for relative change in attack success across pipelines and representations, complemented by absolute ASR change and safe-to-attacked flip rates.</span></div></li>
+            <li><i>C3</i><div><b>Cross-View Consistency Guard</b><span>Detects behavioral disagreement across original Vietnamese, diacritic-free Vietnamese, and English-translated views using deterministic action signatures.</span></div></li>
+          </ul>
+        </section>
+
+        <section id="benchmark">
+          <h2><b>02</b>benchmark</h2>
+          <div class="prose">
+            <p>Each task pairs a trusted request <code>q</code> with untrusted content <code>c</code>. The attacker may only insert a span <code>s</code> into <code>c</code>; it cannot touch the request or the system prompt. A pipeline <code>P</code> presents <code>(q, c_atk)</code> to agent <code>A</code>, which returns one <code>ACTION</code> (a structured tool call) or one <code>ANSWER</code>. Each case defines a machine-checkable predicate; the attack succeeds when the predicate holds. Tools are simulated and never executed.</p>
+          </div>
+          <dl class="def">
+            <div><dt>tasks</dt><dd>email handling · retrieval-augmented QA · customer support · summarization · form extraction (50 seeds each)</dd></div>
+            <div><dt>attacker goals</dt><dd>data exfiltration · task redirection · direct harm</dd></div>
+            <div><dt>injection styles</dt><dd>plain imperative · authority spoofing · camouflage blending · instruction with justification · obfuscated or indirect instruction</dd></div>
+            <div><dt>insertion position</dt><dd>beginning · middle · end of the untrusted document</dd></div>
+            <div><dt>look-alike cases</dt><dd>100 clean seeds containing words such as <em>ignore</em> or <em>system</em> in legitimate contexts; used for false positives, not expanded into representations</dd></div>
+            <div><dt>record fields</dt><dd><code>success_condition</code> · <code>injection_span</code> · <code>attacker_goal</code> · <code>injection_style</code> · <code>injection_position</code> · <code>seed_id</code></dd></div>
+          </dl>
+          <figure>
+            <img src="../figures/figure2.png" alt="Three attacker goals connect to five injection styles, giving 15 template families." />
+            <figcaption><b>FIG 2</b> Construction of the injection template families. Three attacker goals × five injection styles = 15 template families.</figcaption>
+          </figure>
+          <h3>Linguistic representations</h3>
+          <dl class="def">
+            <div><dt>vi_full</dt><dd>original Vietnamese document</dd></div>
+            <div><dt>vi_nodiacritic</dt><dd>diacritics removed via Unicode decomposition and deterministic character mapping</dd></div>
+            <div><dt>teencode</dt><dd>chat-style abbreviated Vietnamese</dd></div>
+            <div><dt>mt_en</dt><dd>English machine translation (Google Translate, no post-editing)</dd></div>
+            <div><dt>bilingual</dt><dd>original Vietnamese concatenated with its English translation</dd></div>
+            <div><dt>mixed</dt><dd>Vietnamese–English code-mixed at word or sentence level</dd></div>
+          </dl>
+          <div class="tbl">
+            <div class="cap"><b>TABLE 1</b> Statistics of ViTransInject-Bench. Development and test splits are disjoint by seed_id.</div>
+            <table>
+              <thead><tr><th>Split</th><th>Cases</th><th>Seeds</th><th>Attack</th><th>Clean</th><th>Look-alike</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Full</th><td>3,100</td><td>350</td><td>1,500</td><td>1,500</td><td>100</td></tr>
+                <tr><th scope="row">Dev</th><td>620</td><td>70</td><td>300</td><td>300</td><td>20</td></tr>
+                <tr><th scope="row">Test</th><td>2,480</td><td>280</td><td>1,200</td><td>1,200</td><td>80</td></tr>
+              </tbody>
+            </table>
+            <div class="note">250 seeds × 2 subsets × 6 representations = 3,000 records, plus 100 look-alike records. Fixed random seed, 20% dev / 80% test.</div>
+          </div>
+        </section>
+
+        <section id="method">
+          <h2><b>03</b>method</h2>
+          <figure>
+            <img src="../figures/figure1.png" alt="Overview of ViTransInject from seed cases through pipelines, defenses, and a simulated agent to metrics." />
+            <figcaption><b>FIG 1</b> Overview of ViTransInject. Seed cases are expanded into attack, clean, and clean look-alike records, rendered into multiple linguistic representations, and evaluated under deployment pipelines and defense configurations with a simulated tool-using agent.</figcaption>
+          </figure>
+          <h3>Deployment pipelines (all start from vi_full)</h3>
+          <dl class="def">
+            <div><dt>P1 vietnamese direct</dt><dd>document, request, and system prompt stay in Vietnamese</dd></div>
+            <div><dt>P2 full translation</dt><dd>document and request translated to English; English system prompt</dd></div>
+            <div><dt>P3 query-only</dt><dd>request translated to English; English system prompt; document stays Vietnamese</dd></div>
+            <div><dt>P4 bilingual context</dt><dd>Vietnamese document concatenated with its English translation; Vietnamese request and system prompt</dd></div>
+          </dl>
+          <h3>Paired metrics</h3>
+          <div class="eqs">
+            <div class="eq"><code>TAF_v = ASR_v / ASR_vi_full</code><p>Relative change in attack success versus original Vietnamese. &gt; 1 amplifies, &lt; 1 attenuates; undefined when the baseline is 0.</p></div>
+            <div class="eq"><code>ΔASR_v = ASR_v − ASR_vi_full</code><p>Absolute change, reported because a ratio can look large on a small baseline.</p></div>
+            <div class="eq"><code>Flip_v = |{i : y_i(vi_full)=0 ∧ y_i(v)=1}| / |I_v|</code><p>Share of paired attack cases that fail under vi_full but succeed under representation v.</p></div>
+          </div>
+          <h3>Setup</h3>
+          <dl class="def">
+            <div><dt>models</dt><dd>Llama-3.2-1B · Qwen2.5-1.5B · Gemma-2-2B · Qwen2.5-3B · Sailor2-1B (self-hosted, open-weight, instruction-tuned)</dd></div>
+            <div><dt>decoding</dt><dd>temperature 0; single turn; no action–observation loop</dd></div>
+            <div><dt>split</dt><dd>test: 1,200 attack · 1,200 clean · 80 clean look-alike</dd></div>
+            <div><dt>metrics</dt><dd>ASR · BTU (benign task utility) · FPR · DR (detection rate) · TAF · ΔASR · flip rate</dd></div>
+          </dl>
+        </section>
+
+        <section id="results">
+          <h2><b>04</b>results</h2>
+          <h3 style="margin-top:0">RQ1 · attack success across deployment pipelines</h3>
+          <div class="prose"><p>No pipeline produces a consistent effect across all models. Mean ASR rises from 0.071 under P1 to 0.097 under P4, driven mainly by Qwen2.5-3B and Sailor2-1B. Query-only translation is highest for Qwen2.5-1.5B; Gemma-2-2B stays flat or slightly lower under translation-mediated pipelines.</p></div>
+          <div class="tbl">
+            <div class="cap"><b>TABLE 2</b> Attack success rate under the four deployment pipelines. Highlight = highest ASR per model.</div>
+            <table>
+              <thead><tr><th>Agent model</th><th>P1</th><th>P2</th><th>P3</th><th>P4</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Llama-3.2-1B</th><td>0.060</td><td>0.075</td><td class="hi">0.085</td><td class="hi">0.085</td></tr>
+                <tr><th scope="row">Qwen2.5-1.5B</th><td>0.065</td><td>0.095</td><td class="hi">0.100</td><td>0.085</td></tr>
+                <tr><th scope="row">Gemma-2-2B</th><td class="hi">0.065</td><td>0.060</td><td>0.055</td><td>0.055</td></tr>
+                <tr><th scope="row">Qwen2.5-3B</th><td>0.100</td><td>0.085</td><td>0.080</td><td class="hi">0.130</td></tr>
+                <tr><th scope="row">Sailor2-1B</th><td>0.065</td><td>0.045</td><td>0.090</td><td class="hi">0.130</td></tr>
+                <tr class="mean"><th scope="row">Mean</th><td>0.071</td><td>0.072</td><td>0.082</td><td>0.097</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h3>RQ2 · effects of linguistic representations</h3>
+          <div class="prose"><p>Cross-lingual configurations produce the largest pooled increases. <code>mt_en</code> and <code>bilingual</code> raise pooled ASR from 0.071 to 0.092 and 0.090 (TAF 1.30 and 1.27), increase ASR for four of five models, and yield the highest flip rates. Teencode has the lowest pooled ASR and never increases attack success. Model-level effects are heterogeneous: bilingual gives TAF 2.33 for Llama-3.2-1B and 0.60 for Qwen2.5-3B.</p></div>
+          <div class="tbl">
+            <div class="cap"><b>TABLE 3</b> Pooled effects of linguistic variants relative to vi_full. Last column: models with TAF &gt; 1.</div>
+            <table>
+              <thead><tr><th>Variant</th><th>ASR</th><th>ΔASR</th><th>TAF</th><th>Flip</th><th>&gt; 1</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">vi_full</th><td>0.071</td><td>—</td><td>1.00</td><td>—</td><td>—</td></tr>
+                <tr><th scope="row">mt_en</th><td>0.092</td><td>+0.021</td><td class="hi">1.30</td><td>0.069</td><td>4/5</td></tr>
+                <tr><th scope="row">bilingual</th><td>0.090</td><td>+0.019</td><td class="hi">1.27</td><td>0.065</td><td>4/5</td></tr>
+                <tr><th scope="row">vi_nodiacritic</th><td>0.077</td><td>+0.006</td><td>1.09</td><td>0.045</td><td>3/5</td></tr>
+                <tr><th scope="row">mixed</th><td>0.073</td><td>+0.002</td><td>1.03</td><td>0.025</td><td>2/5</td></tr>
+                <tr><th scope="row">teencode</th><td>0.060</td><td>−0.011</td><td>0.85</td><td>0.020</td><td>0/5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure>
+            <img src="../figures/figure3.png" alt="Bar chart of TAF per model and representation on a log scale with a dashed line at 1." />
+            <figcaption><b>FIG 3</b> TAF of each linguistic representation relative to vi_full. Values above 1 indicate a higher ASR than the original Vietnamese representation.</figcaption>
+          </figure>
+          <div class="callout"><b>Caveat.</b> mt_en and bilingual effects are properties of the complete input configuration, not document translation alone: both use an English system prompt, and bilingual also lengthens the context and repeats the injected content. Document language, prompt language, context length, and repetition are not isolated here.</div>
+        </section>
+
+        <section id="defense">
+          <h2><b>05</b>defense · cross-view consistency guard</h2>
+          <div class="flow">
+            <div><span class="k">1 · views</span><code>vi_full · vi_nodiacritic · mt_en</code><p>Same task, model, tools, and decoding. Vietnamese system prompt for the two Vietnamese views; English for the translated view.</p></div>
+            <div><span class="k">2 · signature</span><code>sig(a) = ANSWER | tool:target</code><p>Deterministic per view. target is the normalized security-relevant argument, e.g. the lowercase recipient of <code>send_email</code>.</p></div>
+            <div><span class="k">3 · decision</span><code><span class="allow">z1 = z2 = z3 → allow</span><br /><span class="block">otherwise → block</span></code><p>Compares actions, not wording. Three agent passes per case. Misses attacks that stay text-only in every view.</p></div>
+          </div>
+          <h3>RQ3 · effectiveness and utility trade-offs</h3>
+          <div class="prose"><p>The guard reaches the lowest mean residual ASR and is best for Llama-3.2-1B, Qwen2.5-1.5B, and Gemma-2-2B; keyword filtering is lower for Qwen2.5-3B and Sailor2-1B but blocks every clean look-alike case. Spotlighting keeps the most benign utility with no blocking false positives, but reduces attack success less.</p></div>
+          <div class="tbl">
+            <div class="cap"><b>TABLES 4 &amp; 5</b> Mean over five models. ASR on attack cases, FPR on clean look-alike cases, BTU on clean cases.</div>
+            <table>
+              <thead><tr><th>Defense</th><th>ASR ↓</th><th>FPR ↓</th><th>BTU ↑</th><th>Agent passes</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">None</th><td>0.077</td><td>0%</td><td>64.8%</td><td>1</td></tr>
+                <tr><th scope="row">Keyword filter</th><td>0.042</td><td class="bad">100%</td><td>60.8%</td><td>≤ 1</td></tr>
+                <tr><th scope="row">Spotlighting</th><td>0.061</td><td>0%</td><td class="hi">68.2%</td><td>1</td></tr>
+                <tr><th scope="row">Cross-View Guard</th><td class="hi">0.036</td><td>24.2%</td><td>56.9%</td><td>3</td></tr>
+              </tbody>
+            </table>
+            <div class="note">Guard FPR by model: Llama-3.2-1B 35.0 · Qwen2.5-1.5B 30.0 · Gemma-2-2B 0.0 · Qwen2.5-3B 21.2 · Sailor2-1B 35.0. Largest BTU drop under the guard: Sailor2-1B, 69.9% → 47.2%.</div>
+          </div>
+          <div class="tbl">
+            <div class="cap"><b>TABLE 4</b> ASR per model under each defense. Highlight = lowest ASR per model.</div>
+            <table>
+              <thead><tr><th>Agent model</th><th>None</th><th>Keyword</th><th>Spotlighting</th><th>Guard</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Llama-3.2-1B</th><td>0.081</td><td>0.049</td><td>0.057</td><td class="hi">0.044</td></tr>
+                <tr><th scope="row">Qwen2.5-1.5B</th><td>0.073</td><td>0.041</td><td>0.063</td><td class="hi">0.027</td></tr>
+                <tr><th scope="row">Gemma-2-2B</th><td>0.077</td><td>0.043</td><td>0.052</td><td class="hi">0.018</td></tr>
+                <tr><th scope="row">Qwen2.5-3B</th><td>0.077</td><td class="hi">0.042</td><td>0.063</td><td>0.049</td></tr>
+                <tr><th scope="row">Sailor2-1B</th><td>0.075</td><td class="hi">0.037</td><td>0.071</td><td>0.043</td></tr>
+                <tr class="mean"><th scope="row">Mean</th><td>0.077</td><td>0.042</td><td>0.061</td><td>0.036</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <figure>
+            <img src="../figures/figure4.png" alt="ASR falls and detection rate rises for Llama-3.2-1B and Qwen2.5-1.5B as views are added." />
+            <figcaption><b>FIG 4</b> View ablation for Llama-3.2-1B and Qwen2.5-1.5B. Solid: ASR (left axis). Dashed: detection rate (right axis). One view gives no disagreement signal; adding the diacritic-free view yields nonzero detection; the English view lowers ASR further.</figcaption>
+          </figure>
+        </section>
+
+        <section id="resources">
+          <h2><b>06</b>resources</h2>
+          <div class="links">
+            <a href="https://huggingface.co/datasets/trongnb/ViTransInject" rel="noopener"><span class="k">dataset</span><b>ViTransInject-Bench</b><span class="u">huggingface.co/datasets/trongnb/ViTransInject</span></a>
+            <a href="https://github.com/trantrongnb/ViTransInject" rel="noopener"><span class="k">code</span><b>Evaluation harness, simulated tools, defenses</b><span class="u">github.com/trantrongnb/ViTransInject</span></a>
+          </div>
+          <pre class="block"><code><span class="c"># clone the harness</span>
+git clone https://github.com/trantrongnb/ViTransInject.git
+cd ViTransInject
+
+<span class="c"># fetch benchmark records</span>
+huggingface-cli download trongnb/ViTransInject --repo-type dataset</code></pre>
+          <div class="callout"><b>Scope.</b> Single-turn agent, simulated tools, temperature 0, open-weight models of 1–3B parameters. Results describe this protocol and may not transfer to multi-step agents or larger models.</div>
+        </section>
+
+        <section id="citation">
+          <h2><b>07</b>citation</h2>
+          <div class="cite">
+            <button type="button" data-copy="bibtex">copy</button>
+            <pre class="block" style="margin-top:0" id="bibtex"><code>@misc{tran2026vitransinject,
+  title  = {ViTransInject: Evaluating Translation-Mediated Indirect
+            Prompt Injection in Vietnamese LLM Agents},
+  author = {Tran, Trong and Tran, Thanh and Pham Duc, Cuong},
+  year   = {2026},
+  note   = {Preprint. Faculty of Artificial Intelligence, PTIT, Hanoi},
+  url    = {https://github.com/trantrongnb/ViTransInject}
+}</code></pre>
+          </div>
+        </section>
+
+        <footer><span>ViTransInject · Faculty of Artificial Intelligence, PTIT</span><span><a href="../paper/ViTransInject.pdf">paper</a> · <a href="https://github.com/trantrongnb/ViTransInject" rel="noopener">code</a> · <a href="mailto:cuongpd@ptit.edu.vn">contact</a></span></footer>
+      </main>
+    </div>
+
+    <script>
+      document.querySelectorAll('[data-copy]').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const target = document.getElementById(button.dataset.copy);
+          if (!target) return;
+          const label = button.textContent;
+          try { await navigator.clipboard.writeText(target.innerText); button.textContent = 'copied'; }
+          catch { button.textContent = 'select & copy'; }
+          setTimeout(() => { button.textContent = label; }, 1600);
+        });
+      });
+      const links = [...document.querySelectorAll('.side li a')];
+      const sections = links.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+      const spy = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+        });
+      }, { rootMargin: '-15% 0px -75% 0px' });
+      sections.forEach((s) => spy.observe(s));
+    </script>
+  </body>
+</html>

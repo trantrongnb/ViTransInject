@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ViTransInject · project page variants</title>
+    <style>
+      :root{--ink:#1c1c1a;--ink-2:#5a5a54;--line:#dcdcd5;--bg:#f8f8f5}
+      *{box-sizing:border-box}
+      body{margin:0;background:var(--bg);color:var(--ink);font-family:ui-sans-serif,-apple-system,"Segoe UI",Inter,sans-serif;line-height:1.55}
+      main{max-width:52rem;margin:0 auto;padding:64px 24px}
+      h1{font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em}
+      .sub{color:var(--ink-2);margin:0 0 36px;font-size:.95rem}
+      ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+      li a{display:grid;grid-template-columns:7rem 1fr;gap:18px;padding:18px 20px;border:1px solid var(--line);background:#fff;text-decoration:none;color:inherit}
+      li a:hover{border-color:#8a8a82}
+      li b{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);padding-top:3px}
+      li strong{display:block;font-weight:600;margin-bottom:2px}
+      li span{font-size:.88rem;color:var(--ink-2)}
+      li.alt a{background:transparent}
+      .foot{margin-top:36px;font-size:.8rem;color:var(--ink-2)}
+      code{font-family:ui-monospace,Menlo,monospace;font-size:.85em}
+      @media(max-width:560px){li a{grid-template-columns:1fr;gap:6px}}
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>ViTransInject · project page variants</h1>
+      <p class="sub">Same paper content, four layouts: three restrained, one fully committed. Pick one, then copy that folder plus <code>figures/</code> and <code>paper/</code> to deploy.</p>
+      <ul>
+        <li><a href="editorial/"><b>Editorial</b><div><strong>Reading-first document</strong><span>Serif body, sticky table of contents, booktabs-style tables, single green accent. Feels like a journal article.</span></div></a></li>
+        <li><a href="minimal/"><b>Minimal</b><div><strong>White ground, hairline cards</strong><span>Centered hero, at-a-glance row, alternating figure/table rows, one muted blue accent. Product-page rhythm without the noise.</span></div></a></li>
+        <li><a href="technical/"><b>Technical</b><div><strong>Docs-style sidebar</strong><span>Mono headings and labels, key/value definition lists, dense tables, amber accent on warm grey. Reads like a spec.</span></div></a></li>
+        <li><a href="dossier/"><b>Dossier</b><div><strong>Border-inspection dossier</strong><span>Committed design world: one Vietnamese document threaded through checkpoints, six representations on tabs, a reranking inspection board, and a guard that stamps ADMITTED or REFUSED. Public Sans, Archivo Narrow, Oswald stamps, Courier Prime.</span></div></a></li>
+      </ul>
+      <p class="foot">Shared assets: <code>figures/figure1–4.png</code> extracted from the PDF, <code>paper/ViTransInject.pdf</code>. All numbers on every page come from the paper's tables.</p>
+    </main>
+  </body>
+</html>

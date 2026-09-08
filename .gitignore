@@ -2,7 +2,6 @@ data/
 llama.cpp/
 models/
 external/
-docs/
 results/
 scripts/gen/
 mm.txt
@@ -15,3 +14,9 @@ __pycache__/
 
 # OS / editor
 .DS_Store
+
+# Local design tooling and the source PDF (a copy ships in docs/paper/)
+.impeccable/
+PRODUCT.md
+DESIGN.md
+Prompt_Injection.pdf

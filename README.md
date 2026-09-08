@@ -10,6 +10,7 @@ scripts/
   eval/     # run RQ1/RQ2/RQ3 pipelines, BTU judge (with/without defense)
   analysis/ # statistical analysis (McNemar test, ...)
 visual/     # figure-generation scripts + result plots (fig1, fig2)
+docs/       # project landing pages (static HTML; see docs/README.md)
 ```
 
 The following directories are **not** included in this repo (see `.gitignore`):
@@ -18,7 +19,6 @@ The following directories are **not** included in this repo (see `.gitignore`):
 - `results/` — experiment results (output of scripts/eval)
 - `llama.cpp/`, `models/` — llama.cpp build and GGUF weights, download separately
 - `external/` — third-party data (UIT-ViQuAD2.0, vietnews)
-- `docs/` — internal reports/documentation
 - `scripts/gen/` — data-generation scripts
 
 ## Downloading the data
